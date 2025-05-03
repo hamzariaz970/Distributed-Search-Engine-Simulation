@@ -1,0 +1,20 @@
+[CLUSTER] [2025-04-22 01:30:16] [SELECTED NODE] http://localhost:5002 → Score: 140351.57 | Free: 140501.57 MB | Chunks: 3
+[CLUSTER] [2025-04-22 01:30:16] Forwarded sample2.pdf_chunk00000 to http://localhost:5002
+[CLUSTER] [2025-04-22 01:30:16] [SELECTED NODE] http://localhost:5001 → Score: 140351.57 | Free: 140501.57 MB | Chunks: 3
+[CLUSTER] [2025-04-22 01:30:16] Forwarded sample2.pdf_chunk00001 to http://localhost:5001
+[CLUSTER] [2025-04-22 15:42:51] [SELECTED NODE] http://localhost:5002 → Score: 155463.28 | Free: 155513.28 MB | Chunks: 1
+[CLUSTER] [2025-04-22 15:42:51] Forwarded sample1.pdf_chunk00000 to http://localhost:5002
+[CLUSTER] [2025-04-22 15:44:04] [SELECTED NODE] http://localhost:5003 → Score: 155410.5 | Free: 155510.5 MB | Chunks: 2
+[CLUSTER] [2025-04-22 15:44:04] Forwarded sample2.pdf_chunk00000 to http://localhost:5003
+[CLUSTER] [2025-04-22 15:44:04] [SELECTED NODE] http://localhost:5003 → Score: 155359.5 | Free: 155509.5 MB | Chunks: 3
+[CLUSTER] [2025-04-22 15:44:04] Forwarded sample2.pdf_chunk00001 to http://localhost:5003
+[CLUSTER] [2025-05-03 18:08:26] [SELECTED NODE] http://localhost:5001 → Score: 115699.86 | Free: 115849.86 MB | Chunks: 3
+[CLUSTER] [2025-05-03 18:08:26] Forwarded sample1.pdf_chunk00000 to http://localhost:5001
+[CLUSTER] [2025-05-03 21:26:50] [SELECTED NODE] http://localhost:5001 → Score: 115799.67 | Free: 115849.67 MB | Chunks: 1
+[CLUSTER] [2025-05-03 21:26:50] Forwarded sample1.pdf_chunk00000 to http://localhost:5001
+[CLUSTER] [2025-05-03 21:58:12] [SELECTED NODE] http://localhost:5001 → Score: 115745.38 | Free: 115845.38 MB | Chunks: 2
+[CLUSTER] [2025-05-03 21:58:12] Forwarded sample2.pdf_chunk00000 to http://localhost:5001
+[CLUSTER] [2025-05-03 21:58:50] [SELECTED NODE] http://localhost:5002 → Score: 115691.71 | Free: 115841.71 MB | Chunks: 3
+[CLUSTER] [2025-05-03 21:58:50] Forwarded sample1.pdf_chunk00000 to http://localhost:5002
+[CLUSTER] [2025-05-03 22:03:20] [SELECTED NODE] http://localhost:5002 → Score: 115686.1 | Free: 115836.1 MB | Chunks: 3
+[CLUSTER] [2025-05-03 22:03:21] Forwarded sample3.pdf_chunk00000 to http://localhost:5002

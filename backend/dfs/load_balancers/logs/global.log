@@ -1,0 +1,25 @@
+[GLOBAL] [2025-04-22 01:30:08] Clusters configured: ['cluster_1', 'cluster_2']
+[GLOBAL] [2025-04-22 01:30:16] Cluster selected: cluster_1 with 281003.14 MB free
+[GLOBAL] [2025-04-22 01:30:16] Forwarded sample2.pdf_chunk00000 to cluster_1
+[GLOBAL] [2025-04-22 01:30:16] Cluster selected: cluster_1 with 281003.14 MB free
+[GLOBAL] [2025-04-22 01:30:16] Forwarded sample2.pdf_chunk00001 to cluster_1
+[GLOBAL] [2025-04-22 15:41:50] Clusters configured: ['cluster_1', 'cluster_2']
+[GLOBAL] [2025-04-22 15:42:44] Clusters configured: ['cluster_1', 'cluster_2']
+[GLOBAL] [2025-04-22 15:42:51] Cluster selected: cluster_1 with 466539.83999999997 MB free
+[GLOBAL] [2025-04-22 15:42:51] Forwarded sample1.pdf_chunk00000 to cluster_1
+[GLOBAL] [2025-04-22 15:44:04] Cluster selected: cluster_1 with 466531.5 MB free
+[GLOBAL] [2025-04-22 15:44:04] Forwarded sample2.pdf_chunk00000 to cluster_1
+[GLOBAL] [2025-04-22 15:44:04] Cluster selected: cluster_1 with 466528.5 MB free
+[GLOBAL] [2025-04-22 15:44:04] Forwarded sample2.pdf_chunk00001 to cluster_1
+[GLOBAL] [2025-05-03 18:06:40] Clusters configured: ['cluster_1', 'cluster_2', 'cluster_3']
+[GLOBAL] [2025-05-03 18:08:26] Cluster selected: cluster_1 with 231699.72 MB free
+[GLOBAL] [2025-05-03 18:08:26] Forwarded sample1.pdf_chunk00000 to cluster_1
+[GLOBAL] [2025-05-03 21:14:18] Clusters configured: ['cluster_1', 'cluster_2']
+[GLOBAL] [2025-05-03 21:26:50] Cluster selected: cluster_1 with 347549.01 MB free
+[GLOBAL] [2025-05-03 21:26:50] Forwarded sample1.pdf_chunk00000 to cluster_1
+[GLOBAL] [2025-05-03 21:58:12] Cluster selected: cluster_1 with 347536.14 MB free
+[GLOBAL] [2025-05-03 21:58:12] Forwarded sample2.pdf_chunk00000 to cluster_1
+[GLOBAL] [2025-05-03 21:58:50] Cluster selected: cluster_1 with 347525.13 MB free
+[GLOBAL] [2025-05-03 21:58:50] Forwarded sample1.pdf_chunk00000 to cluster_1
+[GLOBAL] [2025-05-03 22:03:20] Cluster selected: cluster_1 with 347508.30000000005 MB free
+[GLOBAL] [2025-05-03 22:03:21] Forwarded sample3.pdf_chunk00000 to cluster_1
