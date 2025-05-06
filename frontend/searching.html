@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Professional File Search & Download</title>
+  <!-- Three.js Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0a0a0a;
+      color: #fff;
+      overflow: hidden;
+      height: 100vh;
+      position: relative;
+    }
+    #bg-canvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 1;
+    }
+    .container {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      padding: 2rem;
+      backdrop-filter: blur(8px);
+    }
+    h1 {
+      font-size: 2.8rem;
+      color: #00c6ff;
+      margin-bottom: 1.5rem;
+      text-shadow: 0 0 8px rgba(0,198,255,0.7);
+    }
+    .search-box {
+      position: relative;
+      width: 100%; max-width: 600px;
+      display: flex;
+      align-items: center;
+      background: rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 0.6rem 1rem;
+      box-shadow: 0 4px 30px rgba(0,0,0,0.5);
+      transition: transform 0.3s ease;
+    }
+    .search-box:focus-within { transform: scale(1.02); }
+    .search-box input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-size: 1.1rem;
+      padding: 0.6rem;
+    }
+    .search-box .icon {
+      font-size: 1.4rem;
+      margin-right: 0.6rem;
+      color: #00c6ff;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 0.6; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.1); }
+    }
+    button {
+      margin-left: 1rem;
+      background: linear-gradient(90deg,#00c6ff,#1f8ef1);
+      border: none;
+      padding: 0.7rem 1.4rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0,198,255,0.4);
+      overflow: hidden;
+      position: relative;
+      transition: transform 0.2s ease;
+    }
+    button:hover { transform: translateY(-2px); }
+    button:active::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 200%; height: 200%;
+      background: rgba(255,255,255,0.3);
+      border-radius: 50%;
+      transform: translate(-50%,-50%) scale(0);
+      animation: ripple 0.6s ease-out;
+    }
+    @keyframes ripple {
+      to { transform: translate(-50%,-50%) scale(1); opacity: 0; }
+    }
+    #search-results {
+      margin-top: 2rem;
+      width: 100%; max-width: 600px;
+    }
+    .file-item {
+      background: rgba(255,255,255,0.05);
+      padding: 1rem;
+      margin: 0.5rem 0;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: slideUp 0.5s forwards;
+    }
+    @keyframes slideUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .file-item span { font-size: 1rem; color: #e0e0e0; }
+    .file-item button {
+      background: #1f8ef1;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .file-item button:hover { background: #00c6ff; }
+  </style>
+</head>
+<body>
+  <canvas id="bg-canvas"></canvas>
+  <div class="container">
+    <h1>🔍 Professional File Search</h1>
+    <div class="search-box">
+      <div class="icon">🔎</div>
+      <input type="text" id="search-input" placeholder="Search files..." />
+      <button onclick="searchFiles()">Search</button>
+    </div>
+    <div id="search-results"></div>
+  </div>
+
+  <script>
+    // Three.js scene setup
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('bg-canvas'), alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    camera.position.z = 15;
+
+    // create floating cubes with bobbing animation
+    const geometry = new THREE.BoxGeometry();
+    const material = new THREE.MeshStandardMaterial({ color: 0x00c6ff, transparent: true, opacity: 0.2 });
+    const cubes = [];
+    for(let i=0; i<50; i++) {
+      const cube = new THREE.Mesh(geometry, material.clone());
+      cube.userData = {
+        initialY: (Math.random()-0.5)*20,
+        speed: Math.random()*0.5 + 0.5,
+        offset: Math.random()*Math.PI*2
+      };
+      cube.position.set((Math.random()-0.5)*20, cube.userData.initialY, (Math.random()-0.5)*20);
+      scene.add(cube);
+      cubes.push(cube);
+    }
+    const light = new THREE.DirectionalLight(0xffffff, 1);
+    light.position.set(0,10,10);
+    scene.add(light);
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const time = performance.now() * 0.001;
+      cubes.forEach(cube => {
+        // bobbing up/down
+        cube.position.y = cube.userData.initialY + Math.sin(time * cube.userData.speed + cube.userData.offset) * 2;
+      });
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // Search and download logic
+    async function searchFiles() {
+      const query = document.getElementById('search-input').value.trim().toLowerCase();
+      const res = await fetch('http://localhost:5000/api/files');
+      const files = await res.json();
+      const filtered = files.filter(f => f.toLowerCase().includes(query));
+      const container = document.getElementById('search-results');
+      container.innerHTML = filtered.length
+        ? filtered.map((file, i) => `<div class="file-item" style="animation-delay: ${i*0.1}s"><span>📄 ${file}</span><button onclick="downloadFile('${file}')">⬇ Download</button></div>`).join('')
+        : '<p style="text-align:center;opacity:0.8;">No files found.</p>';
+    }
+    async function downloadFile(filename) {
+      const resp = await fetch(`http://localhost:5000/api/download/${filename}`);
+      alert(resp.ok ? `✅ Download started: ${filename}` : '❌ Download failed.');
+    }
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth/window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
