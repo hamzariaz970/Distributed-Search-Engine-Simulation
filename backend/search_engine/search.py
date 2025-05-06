@@ -42,7 +42,7 @@ def load_index():
     """
     if not INDEX_FILE.exists() or not DOCS_FILE.exists():
         print("[ERROR] Index or documents not found.")
-        return None, None, None
+        return None, None
 
     with open(INDEX_FILE, 'r', encoding='utf-8') as f:
         corpus = json.load(f)["corpus"]

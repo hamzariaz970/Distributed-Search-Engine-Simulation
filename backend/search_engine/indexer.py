@@ -11,7 +11,7 @@ import xml.etree.ElementTree as ET
 from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
 import platform
-
+from dfs.client.upload import upload_file
 # Check if punkt is available
 try:
     nltk.data.find('tokenizers/punkt')
@@ -178,6 +178,12 @@ def index_pdf(pdf_path):
     save_index(corpus, doc_info, tfidf_matrix)
 
 
+def upload_indexed_file_to_dfs(pdf_path: Path):
+    """
+    After indexing, push the PDF into the DFS.
+    """
+    # upload_file expects a string path
+    upload_file(str(pdf_path))
 
 
 # ---------------------- CLI ----------------------
