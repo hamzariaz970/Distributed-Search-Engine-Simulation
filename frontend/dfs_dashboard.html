@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gen-AI Based DFS</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box }
+    html, body {
+      width:100%; height:100%;
+      background:#0b0c10;
+      overflow:hidden;
+      font-family:'Segoe UI',sans-serif;
+      color:white;
+    }
+
+    /* starfield background */
+    canvas#bg {
+      position:absolute; top:0; left:0;
+      width:100%; height:100%;
+      z-index:1;
+    }
+
+    /* overlay (top half) */
+    #overlay {
+      position:absolute; top:0; left:0;
+      width:100%; height:50vh;
+      display:flex; flex-direction:column;
+      justify-content:center; align-items:center;
+      background:rgba(11,12,16,0.85);
+      z-index:20;
+      text-align:center;
+      animation:fadeIn 1.2s ease-in-out;
+    }
+    #overlay h1 { font-size:2.8rem; margin-bottom:1rem; }
+    #overlay p  {
+      font-size:1.1rem; margin-bottom:2rem;
+      max-width:750px; line-height:1.5;
+    }
+    .btn-group {
+      display:flex; gap:2rem; flex-wrap:wrap;
+    }
+    .option-btn {
+      padding:1rem 2rem; font-size:1.1rem;
+      background:linear-gradient(to right,#1f8ef1,#007bff);
+      border:none; border-radius:12px; color:white;
+      cursor:pointer; box-shadow:0 0 15px rgba(31,142,241,0.4);
+      transition:transform .3s, background .3s;
+    }
+    .option-btn:hover {
+      transform:translateY(-3px) scale(1.05);
+      background:linear-gradient(to right,#0e6ec2,#0056b3);
+    }
+
+    @keyframes fadeIn {
+      from { opacity:0; transform:translateY(20px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- starfield -->
+  <canvas id="bg"></canvas>
+
+  <!-- top overlay -->
+  <div id="overlay">
+    <h1>A Deep Learning Based Search Engine</h1>
+    <p>
+      Welcome to the research UI for a DL-driven file system. Choose an option below to either<br>
+      upload/index your documents or search and download papers from the intelligent archive.
+    </p>
+    <div class="btn-group">
+      <button class="option-btn" onclick="location.href='indexing.html'">Index & Upload</button>
+      <button class="option-btn" onclick="location.href='search_and_list.html'">Search & Download</button>
+    </div>
+  </div>
+
+  <!-- starfield logic -->
+<!-- Replace your <script> block with this: -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.min.js"></script>
+  <script>
+    (function () {
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      camera.position.z = 60;
+      camera.lookAt(0, 0, 0);
+  
+      const renderer = new THREE.WebGLRenderer({
+        canvas: document.getElementById('bg'),
+        alpha: true,
+        antialias: true
+      });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+  
+      const geoStar = new THREE.SphereGeometry(0.12, 8, 8);
+      const matStar = new THREE.MeshBasicMaterial({ color: 0x1f8ef1 });
+      const stars = [];
+  
+      for (let i = 0; i < 500; i++) {
+        const s = new THREE.Mesh(geoStar, matStar.clone());
+        s.position.set(
+          (Math.random() - 0.5) * 200,  // wider spread
+          (Math.random() - 0.5) * 200,
+          (Math.random() - 0.5) * 200
+        );
+        scene.add(s);
+        stars.push(s);
+      }
+  
+      function animateStars() {
+        requestAnimationFrame(animateStars);
+        stars.forEach(s => {
+          s.position.z += 0.1;
+          if (s.position.z > 100) s.position.z = -100;
+        });
+        renderer.render(scene, camera);
+      }
+  
+      animateStars();
+  
+      // Handle resizing
+      window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+    })();
+  </script>
+  
+</body>
+</html>

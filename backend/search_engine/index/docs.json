@@ -1,0 +1,86 @@
+[
+  {
+    "title": "A Survey on Efficient Inference for Large Language Models",
+    "author": "Zixuan Zhou, Xuefei Ning, Ke Hong, Tianyu Fu, Jiaming Xu, Shiyao Li, Yuming Lou, Luning Wang, Zhihang Yuan, Xiuhong Li, Shengen Yan, Guohao Dai, Xiao-Ping Zhang, Yang Fellow, Yuhan Dong, Yu Wang, \u2022 Zhou, H Yang",
+    "file_name": "A Survey on Efficient Inference for Large Language Models.pdf",
+    "relative_path": "input_files/A Survey on Efficient Inference for Large Language Models.pdf"
+  },
+  {
+    "title": "AI-Enabled Deployment Automation for 6G Space-Air-Ground Integrated Networks: Challenges, Design, and Outlook",
+    "author": "Sheng Wu, Ning Chen, Ailing Xiao, Haoge Jia, Chunxiao Jiang, Peiying Zhang",
+    "file_name": "AI-Enabled_Deployment_Automation_for_6G_Space-Air-Ground_Integrated_Networks_Challenges_Design_and_Outlook.pdf",
+    "relative_path": "input_files/AI-Enabled_Deployment_Automation_for_6G_Space-Air-Ground_Integrated_Networks_Challenges_Design_and_Outlook.pdf"
+  },
+  {
+    "title": "AN IMAGE IS WORTH 16X16 WORDS: TRANSFORMERS FOR IMAGE RECOGNITION AT SCALE",
+    "author": "Alexey Dosovitskiy, Lucas Beyer, Alexander Kolesnikov, Dirk Weissenborn, Xiaohua Zhai, Thomas Unterthiner, Mostafa Dehghani, Matthias Minderer, Georg Heigold, Sylvain Gelly, Jakob Uszkoreit, Neil Houlsby",
+    "file_name": "An Image Is Worth 16X16 Words- Transformers For Image Recognition At Scale.pdf",
+    "relative_path": "input_files/An Image Is Worth 16X16 Words- Transformers For Image Recognition At Scale.pdf"
+  },
+  {
+    "title": "Provided proper attribution is provided, Google hereby grants permission to reproduce the tables and figures in this paper solely for use in journalistic or scholarly works. Attention Is All You Need",
+    "author": "Ashish Vaswani, Noam Shazeer, Google Brain, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan Gomez, \u0141ukasz Kaiser",
+    "file_name": "Attention Is All You Need.pdf",
+    "relative_path": "input_files/Attention Is All You Need.pdf"
+  },
+  {
+    "title": "Deep Reinforcement Learning from Human Preferences",
+    "author": "Paul Christiano, Jan Leike, Miljan Martic, Shane Legg, Dario Amodei",
+    "file_name": "Deep Reinforcement Learning from Human Preferences.pdf",
+    "relative_path": "input_files/Deep Reinforcement Learning from Human Preferences.pdf"
+  },
+  {
+    "title": "Denoising Diffusion Probabilistic Models",
+    "author": "Jonathan Ho, U Berkeley, Ajay Jain, Pieter Abbeel",
+    "file_name": "Denoising Diffusion Probabilistic Models.pdf",
+    "relative_path": "input_files/Denoising Diffusion Probabilistic Models.pdf"
+  },
+  {
+    "title": "Generative AI at Work Erik Brynjolfsson",
+    "author": "Danielle Li, Lindsey Raymond, Nber Mit",
+    "file_name": "Generative AI at Work.pdf",
+    "relative_path": "input_files/Generative AI at Work.pdf"
+  },
+  {
+    "title": "GPT (Generative Pre-trained Transformer) -A Comprehensive Review on Enabling Technologies, Potential Applications, Emerging Challenges, and Future Directions",
+    "author": "Gokul Yenduri, Ramalingam Chemmalar, Gautam Srivastava, Praveen Kumar, Reddy Maddikunta, Raj Deepti, Rutvij Jhaveri, Weizheng Wang, Athanasios Vasilakos, Thippa Gadekallu",
+    "file_name": "GPT (Generative Pre-trained Transformer).pdf",
+    "relative_path": "input_files/GPT (Generative Pre-trained Transformer).pdf"
+  },
+  {
+    "title": "Large Language Model Partitioning for Low-Latency Inference at the Edge",
+    "author": "Dimitrios Kafetzis, Ramin Khalili, Iordanis Koutsopoulos",
+    "file_name": "Large Language Model Partitioning for Low-Latency Inference at the Edge.pdf",
+    "relative_path": "input_files/Large Language Model Partitioning for Low-Latency Inference at the Edge.pdf"
+  },
+  {
+    "title": "Enhancing Language Models with Task-Agnostic Scaffolding",
+    "author": "Mirac Suzgun, Adam Tauman, Kalai Openai, Ex-Dy St, Meta Mp",
+    "file_name": "Meta Prompting- Task AgnosticScaffolding.pdf",
+    "relative_path": "input_files/Meta Prompting- Task AgnosticScaffolding.pdf"
+  },
+  {
+    "title": "Meta-Learning and Knowledge Discovery based Physics-Informed Neural Network for Remaining Useful Life Prediction",
+    "author": "Yu Wang, Shujie Liu, Shuai Lv, Gengshuo Liu",
+    "file_name": "Meta-Learning and Knowledge Discovery based Physics-Informed Neural Network for Remaining Useful Life Prediction.pdf",
+    "relative_path": "input_files/Meta-Learning and Knowledge Discovery based Physics-Informed Neural Network for Remaining Useful Life Prediction.pdf"
+  },
+  {
+    "title": "Representation Learning: A Review and New Perspectives",
+    "author": "Yoshua Bengio, Aaron Courville, Pascal Vincent",
+    "file_name": "Representation Learning- A Review and New Perspectives.pdf",
+    "relative_path": "input_files/Representation Learning- A Review and New Perspectives.pdf"
+  },
+  {
+    "title": "Tree of Thoughts: Deliberate Problem Solving with Large Language Models",
+    "author": "Shunyu Yao, Dian Yu, Google Deepmind, Jeffrey Zhao, Thomas Griffiths, Yuan Cao, Karthik Narasimhan",
+    "file_name": "Tree of Thoughts.pdf",
+    "relative_path": "input_files/Tree of Thoughts.pdf"
+  },
+  {
+    "title": "AlphaMaze: Enhancing Large Language Models' Spatial Intelligence via GRPO",
+    "author": "Alan Dao, Gia Tuan Dao, Dinh Bach Vu, Menlo Research",
+    "file_name": "AlphaMaze.pdf",
+    "relative_path": "input_files/AlphaMaze.pdf"
+  }
+]

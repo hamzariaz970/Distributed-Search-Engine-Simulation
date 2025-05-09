@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Search & Browse • DFS</title>
+  <style>
+    * { box-sizing:border-box; margin:0; padding:0 }
+    html, body {
+      height:100%; background:#0b0c10; color:#fff;
+      font-family:'Segoe UI',sans-serif; overflow:hidden;
+    }
+    canvas#bg {
+      position:absolute; top:0; left:0; width:100%; height:100%;
+    }
+    #backBtn {
+      position:absolute; top:20px; left:20px; z-index:11;
+      background:linear-gradient(90deg,#00c6ff,#1f8ef1);
+      color:#fff; border:none; border-radius:6px;
+      padding:.5rem 1rem; font-size:.9rem; cursor:pointer;
+      box-shadow:0 0 15px #00c6ff;
+      transition:transform .3s,box-shadow .3s;
+    }
+    #backBtn:hover {
+      transform:scale(1.05);
+      box-shadow:0 0 25px #00c6ff;
+    }
+    #panel {
+      position:absolute; top:50%; left:50%;
+      transform:translate(-50%,-50%);
+      width:80%; max-width:1000px;
+      max-height:90vh; overflow-y:auto;
+      background:rgba(11,12,16,0.85);
+      padding:2rem; border-radius:12px; z-index:10;
+    }
+    #panel h1 {
+      text-align:center; margin-bottom:1.5rem;
+      font-size:2rem; color:#fff;
+    }
+    #searchBox {
+      display:flex; justify-content:center; margin-bottom:1rem;
+    }
+    #searchBox input {
+      width:60%; max-width:500px;
+      padding:.6rem 1rem;
+      border:none; border-radius:12px;
+      font-size:1rem; color:#fff;
+      background:rgba(255,255,255,0.1);
+      outline:none; box-shadow:0 4px 30px rgba(0,0,0,0.5);
+      transition:transform .2s;
+    }
+    #searchBox input:focus {
+      transform:scale(1.02);
+    }
+    #list { margin-bottom:1rem; }
+    .file-item {
+      display:flex; justify-content:space-between;
+      align-items:flex-start; margin-bottom:1.5rem;
+      padding:1.25rem 1.5rem;
+      background:rgba(255,255,255,0.05);
+      border-radius:8px;
+      transition:transform .3s ease-out,box-shadow .3s ease-out;
+      transform-origin:center top;
+    }
+    .file-item:hover {
+      transform:scale(1.05);
+      box-shadow:0 0 20px rgba(0,198,255,0.6);
+      z-index:2;
+    }
+    .file-info { flex:1; margin-right:1rem; }
+    .file-info .name { font-size:1.1rem; font-weight:bold; }
+    .file-info .meta { margin-top:.3rem; color:#aaa; font-size:.9rem; }
+    .file-info .snippet {
+      display:none; margin-top:.6rem; font-size:.85rem;
+      color:#ccc; line-height:1.4; word-wrap:break-word;
+    }
+    .file-item:hover .file-info .snippet {
+      display:block;
+    }
+    .btn {
+      border:none; border-radius:6px; cursor:pointer;
+      font-size:.9rem; padding:.4rem .8rem; margin-left:.5rem;
+      transition:background .2s ease-out;
+    }
+    .btn-open { background:#1f8ef1; color:#fff }
+    .btn-open:hover { background:#0e6ec2 }
+    .btn-download { background:#00c6ff; color:#000 }
+    .btn-download:hover { background:#007bbf }
+    .btn-delete { background:#007bff; color:#fff; font-size:1.1rem; line-height:1; padding:.3rem .5rem }
+    .btn-delete:hover { background:#0056b3 }
+    #pagination {
+      text-align:center; margin-top:1.5rem;
+    }
+    .page-btn {
+      background:#1f8ef1; color:#fff; border:none;
+      margin:0 .4rem; padding:.5rem .9rem;
+      border-radius:6px; cursor:pointer;
+      transition:background .2s ease-out;
+    }
+    .page-btn:disabled { opacity:.4; cursor:default }
+    .page-btn:not(:disabled):hover { background:#0e6ec2 }
+
+    /* Toast Notification */
+    #toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(31, 142, 241, 0.9);
+      color: #fff;
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 0 20px rgba(31,142,241,0.6);
+      z-index: 999;
+      display: none;
+      animation: fadeInOut 3s ease-in-out;
+    }
+    @keyframes fadeInOut {
+      0%   { opacity: 0; transform: translateX(-50%) translateY(20px); }
+      10%  { opacity: 1; transform: translateX(-50%) translateY(0); }
+      90%  { opacity: 1; }
+      100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+    }
+  </style>
+</head>
+<body>
+
+  <button id="backBtn" onclick="location.href='dfs_dashboard.html'">← Dashboard</button>
+
+  <div id="panel">
+    <h1>🔍 Search & Browse Papers</h1>
+    <div id="searchBox">
+      <input type="text" id="search-input" placeholder="Type to search…" autocomplete="off">
+    </div>
+    <div id="list"></div>
+    <div id="pagination">
+      <button id="prevBtn" class="page-btn">« Prev</button>
+      <button id="nextBtn" class="page-btn">Next »</button>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+  <canvas id="bg"></canvas>
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.min.js"></script>
+  <script>
+    // ——— Starfield Background ———
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, innerWidth/innerHeight, 0.1,1000);
+    const renderer = new THREE.WebGLRenderer({ canvas:document.getElementById('bg'), antialias:true });
+    renderer.setSize(innerWidth,innerHeight);
+    camera.position.z=10;
+    const geo = new THREE.SphereGeometry(0.1,16,16);
+    const mat = new THREE.MeshBasicMaterial({ color:0x1f8ef1 });
+    const spheres = [];
+    for(let i=0;i<200;i++){
+      const m=new THREE.Mesh(geo,mat.clone());
+      m.position.set((Math.random()-0.5)*20,(Math.random()-0.5)*20,(Math.random()-0.5)*20);
+      scene.add(m);
+      spheres.push(m);
+    }
+    function animateBg(){
+      requestAnimationFrame(animateBg);
+      const t=Date.now()*0.0005;
+      spheres.forEach((s,i)=>{
+        s.rotation.x+=0.002;
+        s.rotation.y+=0.002;
+        s.position.x+=Math.sin(t+i)*0.0005;
+        s.position.y+=Math.cos(t+i)*0.0005;
+      });
+      scene.rotation.y+=0.0002;
+      renderer.render(scene,camera);
+    }
+    animateBg();
+    window.addEventListener('resize',()=>{
+      camera.aspect=innerWidth/innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth,innerHeight);
+    });
+
+    // ——— Toast Utility ———
+    function showToast(message, type='info') {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.style.background = type==='error'
+        ? 'rgba(255,80,80,0.9)'
+        : 'rgba(31,142,241,0.9)';
+      toast.style.display='block';
+      toast.style.animation='none';
+      void toast.offsetWidth;
+      toast.style.animation='fadeInOut 3s ease-in-out';
+      setTimeout(()=>toast.style.display='none', 2900);
+    }
+
+    // ——— App State ———
+    let files = [], page = 0, pageSize = 10;
+
+    // ——— Fetch & Render ———
+    async function loadFiles(){
+      try {
+        const res = await fetch('/api/files');
+        files = await res.json();
+        await renderPage();
+      } catch {
+        showToast('Failed to load files.','error');
+        document.getElementById('list').innerHTML =
+          '<p style="color:tomato">Failed to load files.</p>';
+      }
+    }
+
+    async function renderPage(){
+      const q = document.getElementById('search-input').value.trim();
+      if(q){
+        document.getElementById('pagination').style.display='none';
+        await doSearch(q);
+        return;
+      }
+      // static, paginated listing
+      document.getElementById('pagination').style.display='block';
+      const start = page*pageSize, slice = files.slice(start, start+pageSize);
+      const container = document.getElementById('list');
+      container.innerHTML = slice.map(f=>`
+        <div class="file-item">
+          <div class="file-info">
+            <div class="name">${f.file_name}</div>
+            <div class="meta">By: ${f.author}</div>
+            <div class="snippet" data-name="${f.file_name}">Loading preview…</div>
+          </div>
+          <div>
+            <button class="btn btn-open" onclick="window.open('/api/view/${encodeURIComponent(f.file_name)}','_blank')">Open</button>
+            <button class="btn btn-download" onclick="showToast('Download…');location.href='/api/download/${encodeURIComponent(f.file_name)}'">⬇</button>
+            <button class="btn btn-delete" onclick="deleteFile('${encodeURIComponent(f.file_name)}')">🗑️</button>
+          </div>
+        </div>
+      `).join('') || '<p><em>No files uploaded.</em></p>';
+      document.getElementById('prevBtn').disabled = page===0;
+      document.getElementById('nextBtn').disabled = (page+1)*pageSize >= files.length;
+      fetchSnippets();
+    }
+
+    document.getElementById('prevBtn').onclick = ()=>{
+      if(page>0){ page--; renderPage(); }
+    };
+    document.getElementById('nextBtn').onclick = ()=>{
+      if((page+1)*pageSize < files.length){ page++; renderPage(); }
+    };
+
+    // ——— Live Search ———
+    async function doSearch(q){
+      try {
+        const res = await fetch('/api/search',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({query:q})
+        });
+        const { results } = await res.json();
+        console.log('🔍 search results:', results);
+        const container = document.getElementById('list');
+        container.innerHTML = results.map(r=>`
+          <div class="file-item">
+            <div class="file-info">
+              <div class="name">${r.basename}</div>
+              <div class="meta">By: ${r.author}</div>
+              <div class="snippet" data-name="${r.basename}">Loading preview…</div>
+            </div>
+            <div>
+              <button class="btn btn-open" onclick="window.open('/api/view/${encodeURIComponent(r.basename)}','_blank')">Open</button>
+              <button class="btn btn-download" onclick="showToast('Download…');location.href='/api/download/${encodeURIComponent(r.basename)}'">⬇</button>
+              <button class="btn btn-delete" onclick="deleteFile('${encodeURIComponent(r.basename)}')">🗑️</button>
+            </div>
+          </div>
+        `).slice(0,3).join('') || '<p style="opacity:.6;">No matches found.</p>';
+        fetchSnippets();
+      } catch {
+        showToast('Search failed.','error');
+      }
+    }
+
+    // ——— Snippets Hover ———
+    function fetchSnippets(){
+      document.querySelectorAll('.snippet').forEach(el=>{
+        const name = el.dataset.name;
+        fetch(`/api/snippet/${encodeURIComponent(name)}`)
+          .then(r=>r.json())
+          .then(j=> el.textContent = j.snippet||'(no preview)')
+          .catch(_=> el.textContent='(preview unavailable)');
+      });
+    }
+
+    // ——— Delete ———
+    async function deleteFile(name){
+      if(!confirm(`Delete "${decodeURIComponent(name)}"?`)) return;
+      try {
+        const resp = await fetch(`/api/delete/${name}`,{method:'DELETE'});
+        if(resp.ok){
+          showToast('Deleted successfully.');
+          await loadFiles();
+        } else showToast('Delete failed.','error');
+      } catch {
+        showToast('Error deleting.','error');
+      }
+    }
+
+    // ——— Wire up live search ———
+    function debounce(fn, delay){
+      let t;
+      return (...a)=>{
+        clearTimeout(t);
+        t = setTimeout(()=>fn(...a), delay);
+      };
+    }
+    document.getElementById('search-input')
+      .addEventListener('input', debounce(_ => {
+        page = 0;
+        renderPage();
+      }, 500));
+
+    // ——— Initial load ———
+    loadFiles();
+  </script>
+</body>
+</html>

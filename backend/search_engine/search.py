@@ -113,7 +113,7 @@ def fuzzy_character_level_match(query, document):
     return fuzz.partial_ratio(query.lower(), document.lower()) / 100  # Normalize to [0, 1]
 
 # ---------------------- Main Search Function ----------------------
-
+'''
 def search_query(query):
     """
     Perform a search for the query and return the ranked documents.
@@ -155,6 +155,58 @@ def search_query(query):
         print(f"Relevance score: {score:.3f}")
         print(f"Path: {path}")
         print("-" * 80)
+'''
+
+def search_query(query, threshold: float = 0.2):
+    """
+    Perform a search for the query and return the ranked documents.
+    Filters out any with final weighted score below `threshold`.
+    """
+    corpus, doc_info = load_index()
+    if corpus is None or doc_info is None:
+        print("[ERROR] Index not loaded correctly.")
+        return []
+
+    # 1: Compute character‐level matches
+    char_scores = [character_level_match(query, doc) for doc in corpus]
+
+    # 2: Precompute cosine similarities once
+    cosines = calculate_cosine_similarity(query, corpus)
+
+    results = []
+    for i, (char_score, cos_score) in enumerate(zip(char_scores, cosines)):
+        # Weighted scoring
+        if char_score == 1.0:
+            w = 1.0
+        elif char_score > 0:
+            w = 0.8 * cos_score + 0.2 * char_score
+        else:
+            w = cos_score
+
+        # **NEW**: skip anything below threshold
+        if w < threshold:
+            continue
+
+        info = doc_info[i]
+        results.append({
+            "title": info["title"],
+            "author": info["author"],
+            "score": w,
+            "relative_path": info["relative_path"]
+        })
+
+    # Sort descending
+    results.sort(key=lambda x: x["score"], reverse=True)
+
+    if not results:
+        print(f"[INFO] No documents with score ≥ {threshold:.2f}")
+        return []
+
+    # Print (optional) and return
+    for rank, doc in enumerate(results, 1):
+        print(f"{rank}. {doc['title']} — {doc['author']} (score: {doc['score']:.3f})")
+    return results
+
 
 # ---------------------- CLI Entry Point ----------------------
 

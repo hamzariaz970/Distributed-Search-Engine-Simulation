@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Index & Upload File</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      height: 100vh;
+      background: #000;
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      position: relative;
+      color: #fff;
+    }
+    /* Back button */
+    #backBtn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(255,255,255,0.1);
+      color: #00c6ff;
+      border: 2px solid #00c6ff;
+      border-radius: 6px;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      z-index: 11;
+      transition: background 0.2s;
+    }
+    #backBtn:hover {
+      background: rgba(0,198,255,0.2);
+    }
+
+    .card-container {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      width: 90%; max-width: 500px;
+    }
+    .card {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: 0 0 30px rgba(0,198,255,0.15);
+      text-align: center;
+      animation: fadeIn 1s ease-out;
+    }
+    h1 {
+      font-size: 2.2rem; margin-bottom: 20px; color: #00c6ff;
+    }
+    input[type="file"] {
+      margin: 20px 0; padding: 10px;
+      background: transparent; color: white;
+      border: 2px dashed #00c6ff; border-radius: 8px;
+      cursor: pointer; width: 100%;
+    }
+    .btn {
+      margin-top: 10px; padding: 12px 24px;
+      font-size: 1rem;
+      background: linear-gradient(90deg, #00c6ff, #1f8ef1);
+      border: none; border-radius: 8px; color: white;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 0 15px #00c6ff;
+    }
+    .btn:hover {
+      transform: scale(1.05); box-shadow: 0 0 25px #00c6ff;
+    }
+    .floating-icon {
+      position: absolute; color: #00c6ff; opacity: 0.18;
+      pointer-events: none; filter: drop-shadow(0 0 6px #00c6ff88);
+      animation: float 20s linear infinite;
+    }
+    @keyframes float {
+      0% { transform: translateY(110vh) translateX(0) rotate(0deg); }
+      50% { transform: translateY(40vh) translateX(20px) rotate(180deg); }
+      100% { transform: translateY(-120vh) translateX(0) rotate(360deg); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Back to Dashboard -->
+  <button id="backBtn" onclick="location.href='dfs_dashboard.html'">← Dashboard</button>
+
+  <!-- Floating file icons -->
+  <script>
+    const icons = ['📁','🗂️','💾','📄','🔍','🧠','🌐'];
+    for (let i = 0; i < 25; i++) {
+      const icon = document.createElement('div');
+      icon.classList.add('floating-icon');
+      icon.textContent = icons[Math.floor(Math.random()*icons.length)];
+      const size = Math.random()*30 + 30;
+      const duration = Math.random()*10 + 15;
+      icon.style.left = Math.random()*100 + 'vw';
+      icon.style.top  = Math.random()*100 + 'vh';
+      icon.style.fontSize = `${size}px`;
+      icon.style.animationDuration = `${duration}s`;
+      document.body.appendChild(icon);
+    }
+  </script>
+  
+  <!-- Main Upload UI -->
+  <div class="card-container">
+    <div class="card">
+      <h1>Index and Upload File</h1>
+      <input type="file" id="fileInput" accept=".pdf"/>
+      <br />
+      <button class="btn" onclick="handleUpload()">Upload File</button>
+      <div id="uploadMessage" style="margin-top:1rem;font-weight:bold;"></div>
+    </div>
+  </div>
+
+  <!-- Upload script -->
+  <script>
+    async function handleUpload() {
+      const input = document.getElementById('fileInput');
+      const file = input.files[0];
+      if (!file) {
+        return showUploadMsg('❗ Please select a file first.', 'orange');
+      }
+      showUploadMsg('Uploading…', '#0ff');
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData
+        });
+        if (response.ok) {
+            showUploadMsg('✅ File uploaded & indexed successfully!', 'lime');
+          } else {
+            const err = await response.json();
+            if (err.error === "File already exists") {
+              showUploadMsg('⚠️ File with same name already exists!', 'orange');
+            } else {
+              showUploadMsg('❌ Upload failed.', 'tomato');
+            }
+          }
+      } catch (err) {
+        showUploadMsg(`❌ Error: ${err.message}`, 'tomato');
+      }
+    }
+    function showUploadMsg(text, color) {
+      const msgEl = document.getElementById('uploadMessage');
+      msgEl.textContent = text;
+      msgEl.style.color = color;
+    }
+  </script>
+</body>
+</html>

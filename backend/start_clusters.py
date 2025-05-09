@@ -1,8 +1,11 @@
+# start_clusters.py
 import os
 import subprocess
 import time
 import json
 import sys
+import threading
+import requests
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
@@ -19,76 +22,114 @@ def get_free_ports(start, count):
     return [start + i for i in range(count)]
 
 def launch_nodes(cluster_id, node_ports):
-    processes = []
+    procs = []
     for port in node_ports:
         print(f"Starting storage node on port {port}...")
         p = start_process(["python", "dfs/nodes/node_storage.py", "--port", str(port)])
-        if p: processes.append(p)
-    return processes
+        if p: procs.append(p)
+        else: print(f"[WARN] Node on port {port} did not start.")
+    return procs
 
 def launch_cluster_manager(cluster_port, node_ports):
-    node_urls = json.dumps([f"http://localhost:{port}" for port in node_ports])
+    node_urls = json.dumps([f"http://localhost:{p}" for p in node_ports])
     env = os.environ.copy()
     env["NODES"] = node_urls
     env["PYTHONPATH"] = BASE_DIR
     print(f"Starting cluster manager on port {cluster_port}...")
-    return start_process(["python", "dfs/load_balancers/cluster_manager.py", "--port", str(cluster_port)], env=env)
+    return start_process(
+        ["python", "dfs/load_balancers/cluster_manager.py", "--port", str(cluster_port)],
+        env=env
+    )
 
 def launch_global_balancer(cluster_map):
     env = os.environ.copy()
     env["CLUSTERS"] = json.dumps(cluster_map)
     env["PYTHONPATH"] = BASE_DIR
     print("Starting global load balancer on port 6000...")
-    return start_process(["python", "dfs/load_balancers/global_balancer.py", "--port", "6000"], env=env)
+    
+    return start_process(["python", "dfs/load_balancers/global_balancer.py", "--port", "6001"], env=env)
+
+def monitor_heartbeats(cluster_map, interval=10):
+    """
+    Periodically polls the global balancer and each cluster manager for status.
+    """
+    gb_url = "http://localhost:6000/heartbeats"
+    while True:
+        print("\n--- HEARTBEAT CHECK ---")
+        # 1) Global Balancer heartbeats
+        try:
+            resp = requests.get(gb_url, timeout=5)
+            data = resp.json()
+            print(f"[GLOBAL] heartbeats:", json.dumps(data, indent=2))
+        except Exception as e:
+            print(f"[ERROR] Global balancer heartbeat failed: {e}")
+
+        # 2) Each cluster manager status
+        for name, url in cluster_map.items():
+            status_url = f"{url}/status"
+            try:
+                resp = requests.get(status_url, timeout=5)
+                data = resp.json()
+                print(f"[{name}] status:", json.dumps(data, indent=2))
+            except Exception as e:
+                print(f"[ERROR] {name} status check failed: {e}")
+
+        print("--- end heartbeat ---\n")
+        time.sleep(interval)
 
 def start_clusters_and_nodes():
     print("Starting clusters and nodes...")
     try:
-        clusters = int(input("How many clusters do you want to start? ").strip())
-        nodes_per_cluster = int(input("How many nodes per cluster? ").strip())
+        clusters = int(input("How many clusters? ").strip())
+        nodes_per_cluster = int(input("Nodes per cluster? ").strip())
     except ValueError:
-        print("[ERROR] Please enter valid numbers.")
+        print("[ERROR] Invalid numbers.")
         return
 
     node_base_port = 5001
     cluster_base_port = 7001
 
-    all_node_processes = []
-    cluster_managers = []
+    all_node_procs = []
+    cluster_mgr_procs = []
     cluster_map = {}
 
+    # 1) Launch clusters
     for c in range(clusters):
-        node_ports = get_free_ports(node_base_port + c * nodes_per_cluster, nodes_per_cluster)
+        node_ports = get_free_ports(node_base_port + c*nodes_per_cluster, nodes_per_cluster)
         cluster_port = cluster_base_port + c
 
-        # Launch cluster manager
-        cm_process = launch_cluster_manager(cluster_port, node_ports)
-        cluster_managers.append(cm_process)
+        cm = launch_cluster_manager(cluster_port, node_ports)
+        if cm: cluster_mgr_procs.append(cm)
 
-        # Launch nodes for this cluster
-        node_processes = launch_nodes(c, node_ports)
-        all_node_processes.extend(node_processes)
+        nodes = launch_nodes(c, node_ports)
+        all_node_procs.extend(nodes)
 
-        # Register cluster
         cluster_map[f"cluster_{c+1}"] = f"http://localhost:{cluster_port}"
-
         time.sleep(1)
 
-    # Launch global balancer with the full map
-    global_balancer = launch_global_balancer(cluster_map)
+    # 2) Launch global balancer
+    gb = launch_global_balancer(cluster_map)
     time.sleep(1)
 
-    print("\n✅ System is live!")
+    # 3) Start heartbeat monitor thread
+    monitor_thread = threading.Thread(
+        target=monitor_heartbeats,
+        args=(cluster_map, 10),
+        daemon=True
+    )
+    monitor_thread.start()
 
-    # Keep running the system
+    print("\n✅ System is live! Press Ctrl+C to shut down.\n")
+
     try:
         while True:
-            time.sleep(60)  # Check every 60 seconds, or adjust as needed.
-            print("Clusters and nodes are running...")
+            time.sleep(60)  # just keep main thread alive
     except KeyboardInterrupt:
-        print("\nShutting down clusters and nodes...")
-        for p in all_node_processes + cluster_managers + [global_balancer]:
+        print("\nShutting down all processes...")
+    finally:
+        for p in all_node_procs + cluster_mgr_procs + ([gb] if gb else []):
             if p:
+                print(f"Terminating PID {p.pid}...")
                 p.terminate()
 
 if __name__ == "__main__":

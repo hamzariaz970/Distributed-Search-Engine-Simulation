@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>📄 PDF Viewer</title>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: #0b0c10;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: #1f8ef1;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.2rem;
+    }
+    iframe {
+      flex: 1;
+      width: 100%;
+      border: none;
+      background: #fff;
+    }
+    .error {
+      text-align: center;
+      color: tomato;
+      padding: 2rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>📄 Viewing PDF Document</header>
+  <iframe id="pdfFrame"></iframe>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const file = params.get('file');
+
+    if (file) {
+      const safeFile = encodeURIComponent(file);
+      document.getElementById('pdfFrame').src = `/api/download/${safeFile}`;
+    } else {
+      document.getElementById('pdfFrame').remove();
+      const msg = document.createElement('div');
+      msg.className = 'error';
+      msg.innerHTML = '<strong>Error:</strong> No file specified in the URL.';
+      document.body.appendChild(msg);
+    }
+  </script>
+</body>
+</html>

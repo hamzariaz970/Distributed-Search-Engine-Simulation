@@ -8,8 +8,8 @@ from dfs.core.chunker import split_file
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 CHUNK_DIR = os.path.join(BASE_DIR, "chunks")
 METADATA_DIR = os.path.join(BASE_DIR, "metadata")
-INPUT_DIR = os.path.join(BASE_DIR, "tests", "input_files")
-LOAD_BALANCER_URL = "http://localhost:6000"
+INPUT_DIR = os.path.join(BASE_DIR, "input_files")
+LOAD_BALANCER_URL = "http://localhost:6001"
 
 # Ensure required directories exist
 os.makedirs(CHUNK_DIR, exist_ok=True)
